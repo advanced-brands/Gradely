@@ -10,9 +10,9 @@ This document locks *what* we are building and *why*. System analysis is in `02-
 
 ## 1. One-paragraph description
 
-Gradely is a student-owned academic companion implemented as a C++ console application with file storage. A learner sets up a semester, adds their own courses, records attendance, tracks assignments, tests and exams, keeps course notes, and uses a dashboard that turns that data into activity progress, deadline alerts, and simple rule-based guidance. Gradely does not connect to any institution’s portal, does not manage fees or registration, and does not claim to measure academic performance (marks or GPA) in the first version.
+Gradely is a student-owned academic **application** implemented in C++ (console). On first run the student creates their space (name, student number, institution, program, semester). They then add their own courses, record attendance, track assignments, tests and exams, keep course notes, and use a dashboard that turns that data into activity progress, deadline alerts, and simple rule-based guidance. Data is stored in a **local SQLite database**. Gradely does not connect to any institution’s portal, does not pull records from a registration number, and does not claim to measure academic performance (marks or GPA) in the first version.
 
-A separate HTML/CSS landing page presents Gradely as a product. The website is not the application; it does not run the C++ system.
+A separate HTML/CSS landing page presents Gradely as a product. The website is not the application and does not register users.
 
 ---
 
@@ -36,19 +36,19 @@ Institution, program, and year are typed by the student. Lecturers, registrars, 
 
 ## 4. Main objective
 
-Design and implement a student-centered academic tracking and guidance system in C++ that stores semester activity in files, presents a clear dashboard, and uses rule-based logic (not AI) to warn about attendance risk, upcoming or overdue work, and workload; and present the product with an HTML/CSS landing page suitable for academic assessment.
+Design and implement Gradely as a C++ application: first-run profile setup, student-entered academic data, SQLite persistence, a dashboard with rule-based guidance, and an HTML/CSS landing page that explains how to get started in the app.
 
 ---
 
 ## 5. Specific objectives
 
-1. Allow a student to create and update a personal academic profile and one active semester.
+1. On first run, allow a student to create their space (profile and active semester) and later update it.
 2. Allow the student to add, view, update, and remove courses for that semester.
 3. Record attendance per course, calculate percentage automatically, and warn when it falls below a threshold.
 4. Record academic tasks (assignments, tests, exams) with dates, priority, and status; derive overdue from the deadline and today’s date.
 5. Store and retrieve course notes (topic, date, content).
 6. Generate a dashboard plus rule-based guidance from stored data.
-7. Persist data with file handling; accompany the system with a marketing landing page and assessment documentation.
+7. Persist all application data in SQLite; accompany the system with a marketing landing page that explains how to start the application.
 
 ---
 
@@ -63,18 +63,18 @@ Design and implement a student-centered academic tracking and guidance system in
 | Task | Assignments, tests, exams (one type field) |
 | Note | Course, date, topic, content |
 | Dashboard + Guidance | Overview and if/then recommendations |
-| Storage | Load and save files |
+| Storage | SQLite database (load and save) |
 | Menu (UI) | Console navigation — not a domain module |
 
 ---
 
 ## 7. MVP, Version 2, optional
 
-**MVP:** profile; one active semester; course CRUD; attendance totals and %; threshold warning; tasks with computed overdue; upcoming deadlines; notes; dashboard; 4–6 guidance rules; save/load; input validation; HTML/CSS landing page.
+**MVP:** first-run setup (local registration); profile; one active semester; course CRUD; attendance totals and %; threshold warning; tasks with computed overdue; upcoming deadlines; notes; dashboard; 4–6 guidance rules; SQLite save/load; input validation; HTML/CSS landing page.
 
-**Version 2:** archived semesters; weekly timetable; note keyword search; task sort; text weekly summary.
+**Version 2:** archived semesters; weekly timetable; note keyword search; task sort; text weekly summary; optional CSV import.
 
-**Optional / avoid unless time allows:** grades/GPA; C++ graphs; JSON parser or SQLite; Qt/WinForms GUI; cloud accounts; AI advice; auto-generated recurring tasks.
+**Optional / avoid unless time allows:** grades/GPA; C++ graphs; school-portal sync; Qt/WinForms GUI; cloud accounts; AI advice; auto-generated recurring tasks.
 
 **Progress wording:** dashboard figures are **academic activity progress**, not predicted grades.
 
@@ -92,15 +92,17 @@ Design and implement a student-centered academic tracking and guidance system in
 | Tasks | One class, three types |
 | Timetable | Not in MVP |
 | Grades | Not in MVP |
-| Persistence | Text/CSV files in `data/` |
+| Persistence | SQLite database in `data/` (e.g. `gradely.db`) |
+| Data entry | Student types it; student number is stored, not used to fetch a portal |
 | Dates | `YYYY-MM-DD` plus a small Date helper |
 | Overdue | Computed, not stored as a user-picked status |
+| Website | Storefront only — no Sign up that creates an account |
 
 ---
 
 ## 9. C++ architecture (preview)
 
-Layers: `main` → Menu / Dashboard → Guidance → model classes → Storage → files. Only Storage reads and writes disk. Guidance is a set of `if` rules over current data.
+Layers: `main` → Menu / Dashboard → Guidance → model classes → Storage → SQLite. Only Storage talks to the database. Guidance is a set of `if` rules over current data. First launch with an empty database runs **Create your space**, then the dashboard.
 
 ---
 
@@ -108,9 +110,9 @@ Layers: `main` → Menu / Dashboard → Guidance → model classes → Storage �
 
 1. Research and requirements (this document)
 2. System analysis (`02-system-analysis.md`)
-3. System design (class diagram, file columns, menu mock)
-4. C++ development, module by module
-5. HTML/CSS landing page
+3. System design (class diagram, SQLite tables, menu mock)
+4. C++ application, module by module
+5. HTML/CSS landing page (storefront + get started)
 6. Testing
 7. Documentation
 8. Presentation

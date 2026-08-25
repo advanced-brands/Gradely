@@ -19,3 +19,10 @@ Release/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Gradely runtime database
+data/*.db
+data/*.db-journal
+
+# Compiler output
+gradely.exe

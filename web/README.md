@@ -1,6 +1,6 @@
 # Gradely landing page
 
-Static HTML/CSS product page. It does not connect to the C++ application.
+Static HTML/CSS product page. It does not register users or talk to the C++ application. Getting started happens inside Gradely (Create your space).
 
 ## Local server
 

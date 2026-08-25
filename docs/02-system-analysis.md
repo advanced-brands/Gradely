@@ -6,7 +6,7 @@ This document answers: *who uses the system, what they do, what goes in, what co
 
 ## 1. System context
 
-Gradely runs on the student’s computer. The only human actor is the **Student**. There is no school database, no internet requirement, and no other software that must be running.
+Gradely runs on the student’s computer. The only human actor is the **Student**. There is no school database connection, no internet requirement, and no other software that must be running.
 
 ```
                     +------------------+
@@ -17,17 +17,17 @@ Gradely runs on the student’s computer. The only human actor is the **Student*
                              v
                     +------------------+
                     |  Gradely (C++)   |
-                    |  console + files |
+                    |  console application
                     +--------+---------+
-                             | read / write
+                             | SQLite
                              v
                     +------------------+
-                    |  Local files     |
-                    |  (data/)         |
+                    |  Local database  |
+                    |  data/gradely.db |
                     +------------------+
 ```
 
-The HTML/CSS landing page is **outside** this context. It is a separate presentation artefact. It does not exchange data with the console app.
+The HTML/CSS landing page is **outside** this context. It is a storefront. It does not register users or exchange data with the application.
 
 ---
 
@@ -57,9 +57,9 @@ No staff, parent, or administrator actor in MVP.
 | --- | --- |
 | Language | Main system in C++ |
 | Interface | Console menus |
-| Storage | Files, not a database |
-| Libraries | Standard C++ only (no extra frameworks) |
-| Users | Single local profile |
+| Storage | SQLite database on the student’s machine |
+| Libraries | Standard C++ plus SQLite (amalgamation or linked sqlite3) |
+| Users | Single local profile (first-run setup, not cloud signup) |
 | Time | Semester project — MVP over a complete unfinished system |
 | Honesty | Activity progress must not be labelled as academic performance |
 
@@ -118,10 +118,10 @@ UC10 can appear as part of UC09 (dashboard includes alerts). It is listed separa
 ### UC01 — Start Gradely and load saved data
 
 - **Actor:** Student  
-- **Trigger:** Student runs the program.  
-- **Main success:** Program starts, Storage loads `data/` files if they exist, dashboard (or a short welcome + dashboard option) is available.  
-- **Alternate:** First run — no files. Program uses empty profile/semester and continues. It must not crash.  
-- **Failure:** Files exist but are unreadable. Program shows a clear error and either starts empty or exits with a message (Phase 3 will pick one; analysis requirement is: do not crash silently).
+- **Trigger:** Student runs the application.  
+- **Main success:** Storage opens `data/gradely.db`. If a profile exists, the dashboard is shown.  
+- **Alternate — first run:** No profile. The application runs **Create your space** (name, student number, institution, program, year, semester). That is registration. It does not contact a school. Then the dashboard is shown.  
+- **Failure:** Database cannot be opened. Program shows a clear error and does not crash silently.
 
 ### UC04 — Manage a course
 
@@ -164,7 +164,7 @@ UC10 can appear as part of UC09 (dashboard includes alerts). It is listed separa
 | Task complete | Task choice | Set Completed | Higher activity progress |
 | Note | Course, topic, date, content | Store | Notes list filtered by course |
 | Dashboard | All stored data + today’s date | Aggregate counts; run guidance rules | Formatted summary |
-| Save/Load | Objects in memory | Convert to/from text lines | Files in `data/` |
+| Save/Load | Objects in memory | SQLite insert/update/select | Rows in `gradely.db` |
 
 ---
 
@@ -184,7 +184,7 @@ UC10 can appear as part of UC09 (dashboard includes alerts). It is listed separa
 | FR10 | The system shall allow notes with course, date, topic, and content, and listing (all or by course). |
 | FR11 | The system shall display a dashboard summarising semester, activity progress, attendance, pending tasks, upcoming deadline, upcoming test/exam, and alerts. |
 | FR12 | The system shall generate guidance messages from rules (attendance, urgent deadlines, pending workload, nearby exams). |
-| FR13 | The system shall save data to files and load them on the next start. |
+| FR13 | The system shall persist data in SQLite and load it on the next start. |
 | FR14 | The system shall validate inputs (empty names, invalid dates, attended > held). |
 | FR15 | Activity progress shall be calculated from task completion (completed tasks / total tasks) and clearly labelled as activity, not performance. |
 
@@ -194,10 +194,10 @@ UC10 can appear as part of UC09 (dashboard includes alerts). It is listed separa
 
 | ID | Requirement |
 | --- | --- |
-| NFR01 | Source should compile as standard C++ (target C++17) without third-party libraries. |
-| NFR02 | First-run with empty `data/` shall not crash. |
+| NFR01 | Source should compile as C++17. SQLite is the only extra dependency (amalgamation preferred so the project stays portable). |
+| NFR02 | First run with no database yet shall create the database and run Create your space; it shall not crash. |
 | NFR03 | Menu labels shall be plain language a student can follow without a manual. |
-| NFR04 | Save format shall be inspectable in a text editor (CSV or simple text) for demonstration and defence. |
+| NFR04 | The database shall be demonstrable (e.g. DB Browser for SQLite) during a viva. |
 | NFR05 | Guidance shall be explainable: each message maps to a named rule. |
 | NFR06 | The landing page shall be usable on a typical laptop browser width and a narrower phone-width layout (responsive CSS). |
 
@@ -270,7 +270,7 @@ GRADELY MAIN MENU
 **Tasks submenu:** List / Add / Edit / Update status / Delete / Upcoming / Back  
 **Notes submenu:** List all / List by course / Add / Delete / Back  
 
-On start: load files, then show **Dashboard**, then the main menu (so the demo opens on the “product” screen).
+On start: open the database. If there is no profile, **Create your space**. Then show **Dashboard**, then the main menu.
 
 ---
 
@@ -278,16 +278,17 @@ On start: load files, then show **Dashboard**, then the main menu (so the demo o
 
 ```
 Start
-  -> Load files (or empty state)
+  -> Open SQLite (create file and tables if needed)
+  -> If no profile: Create your space
   -> Show dashboard
   -> Loop: show main menu
        -> Profile / Semester / Courses / Attendance / Tasks / Notes
-       -> After a change: consider auto-save (recommended) or remind to Save
+       -> After a change: write to SQLite immediately
        -> Dashboard can be reopened anytime
-  -> Exit: save if unsaved, then quit
+  -> Exit
 ```
 
-**Recommended for MVP:** save automatically after successful add/edit/delete so a forgotten “Save” does not ruin the demo. Keep menu item Save as “Save now” for the viva. Phase 3 will confirm this.
+**Recommended for MVP:** write to SQLite after every successful add/edit/delete. Keep menu item Save as optional “save now” if we still batch anything; otherwise it can mean “confirm data is stored.”
 
 ---
 
@@ -308,7 +309,7 @@ Start
 
 ## 17. What analysis deliberately leaves to Phase 3
 
-- Exact CSV column order and file names  
+- SQLite table names and columns  
 - C++ class diagram and `.h` / `.cpp` split  
 - How IDs are generated (integer sequence is enough)  
 - Screen-by-screen text mock of the dashboard  
@@ -325,6 +326,6 @@ You can explain to a lecturer, without code:
 3. How attendance % and overdue are calculated  
 4. Why progress is “activity” not “performance”  
 5. How the console is organised  
-6. That the landing page is a separate HTML/CSS product site  
+6. That the landing page is a storefront; registration happens inside the C++ application  
 
-Next: **Phase 3 — System design** (architecture, class diagram, file formats, dashboard text mock).
+Next: **Phase 3 — System design** (architecture, class diagram, SQLite schema, dashboard text mock).

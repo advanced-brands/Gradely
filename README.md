@@ -2,9 +2,9 @@
 
 **Stay on track. Stay ahead.**
 
-Gradely is a student-centered academic progress tracking and guidance system. It is a personal companion for one student — not a school portal.
+Gradely is a **C++ application**: a personal academic companion for one student on their computer — not a school portal and not this website.
 
-The working system is a **C++ console application** with file storage. The **HTML/CSS landing page** presents Gradely as a product.
+On first run the student **creates their space** (name, student number, institution, program, semester). They type their own courses, attendance, tasks, and notes. Data is stored in a **local SQLite database**. The HTML/CSS landing page is the product storefront only.
 
 **Academic title:** Gradely: A Student-Centered Academic Progress Tracking and Guidance System
 
@@ -13,18 +13,21 @@ The working system is a **C++ console application** with file storage. The **HTM
 | Folder | Purpose |
 | --- | --- |
 | `docs/` | Specification, analysis, and later design/testing notes |
-| `src/` | C++ source (not started yet) |
-| `data/` | Saved profile, courses, tasks, and notes at runtime |
+| `src/` | C++ application source |
+| `data/` | SQLite database at runtime (`gradely.db`) |
 | `web/` | Landing page (HTML/CSS) |
 
 ## Current status
 
 - Phase 1 — Project specification: complete
-- Phase 2 — System analysis: in progress (see `docs/`)
-- Phase 3+ — Design, C++ development, landing page: not started
+- Phase 2 — System analysis: complete
+- Phase 3 — System design: complete (`docs/03-system-design.md`)
+- Phase 4 — C++ Build A started: first-run, profile, semester, SQLite, dashboard stub
+
+Build the application from the project root with `compile.bat` (needs `g++`) or see `src/README.md`.
 
 ## Scope (MVP)
 
-Profile, one active semester, courses, attendance totals and percentage, tasks (assignments / tests / exams), notes, dashboard, rule-based guidance, file save/load.
+First-run setup, profile, one active semester, courses, attendance, tasks, notes, dashboard, rule-based guidance, SQLite.
 
-Out of MVP: weekly timetable, grades/GPA, multi-user login, GUI, database, push notifications.
+Out of MVP: school-portal sync, cloud signup, weekly timetable, grades/GPA, GUI toolkit.

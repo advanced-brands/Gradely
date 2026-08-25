@@ -1,5 +1,5 @@
 # data
 
-Runtime files (profile, courses, tasks, notes, settings) will be saved here by the C++ program.
+The Gradely **application** stores its SQLite database here at runtime (for example `gradely.db`).
 
-This folder is empty until the application runs. Do not store secrets here; Gradely is a local student project with no passwords in MVP.
+The file is created on first run. It is local to the student’s computer. The student number in the profile is not used to download records from a school.
