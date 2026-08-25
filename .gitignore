@@ -1,0 +1,21 @@
+# C++ build output
+*.exe
+*.o
+*.obj
+*.out
+*.pdb
+*.ilk
+*.idb
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+x64/
+Debug/
+Release/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
