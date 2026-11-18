@@ -26,3 +26,6 @@ data/*.db-journal
 
 # Compiler output
 gradely.exe
+
+.env
+node_modules/
