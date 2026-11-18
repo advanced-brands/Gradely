@@ -267,6 +267,10 @@ async function initializeSupabase() {
 
   try {
     const response = await fetch("/api/config", { cache: "no-store" });
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error("The /api/config endpoint returned a non-JSON response. Check the Vercel API deployment.");
+    }
     const config = await response.json();
     if (!response.ok) throw new Error(config.error || "Could not load Supabase settings.");
     if (!window.supabase || typeof window.supabase.createClient !== "function") {

@@ -11,6 +11,14 @@ The browser app uses plain HTML, CSS, and JavaScript with Supabase email/passwor
 
 The publishable key is meant to be used by a browser and is returned by the local server to the app. It is not an admin secret. Row-level security in `schema.sql` ensures that each signed-in user can read and change only their own workspace.
 
+## Deploy to Vercel
+
+1. Import the repository with the **repository root** as the Vercel project root.
+2. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in **Project Settings → Environment Variables** for each environment you deploy.
+3. Deploy. [`vercel.json`](../vercel.json) builds the Supabase browser bundle into `web/`, serves that directory as the static site, and Vercel exposes [`api/config.js`](../api/config.js) at `/api/config`.
+
+The local `.env` file is git-ignored and is not uploaded to Vercel; set the variables in the Vercel dashboard. The API route returns JSON even when configuration is missing, so the browser displays a setup error instead of trying to parse Vercel's HTML error page as JSON.
+
 ## Run it
 
 1. Install Node.js 22 or newer.

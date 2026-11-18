@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.1"

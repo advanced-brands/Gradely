@@ -29,3 +29,4 @@ gradely.exe
 
 .env
 node_modules/
+web/vendor/supabase.js
