@@ -1,10 +1,12 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const resolveSupabaseBundle = require("../scripts/supabase-bundle");
 
 const port = 8080;
 const root = __dirname;
 const envPath = path.resolve(root, "..", ".env");
+const vendorPath = resolveSupabaseBundle();
 
 function readEnvFile(filePath) {
   if (!fs.existsSync(filePath)) return {};
@@ -77,16 +79,6 @@ const server = http.createServer((req, res) => {
   }
 
   if (urlPath === "/vendor/supabase.js") {
-    const vendorPath = path.resolve(
-      root,
-      "..",
-      "node_modules",
-      "@supabase",
-      "supabase-js",
-      "dist",
-      "umd",
-      "supabase.js"
-    );
     fs.readFile(vendorPath, (err, data) => {
       if (err) {
         res.writeHead(503, { "Content-Type": "text/plain; charset=utf-8" });

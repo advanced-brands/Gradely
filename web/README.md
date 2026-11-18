@@ -21,7 +21,7 @@ The local `.env` file is git-ignored and is not uploaded to Vercel; set the vari
 
 ## Run it
 
-1. Install Node.js 22 or newer.
+1. Use Node.js 22.x, as configured for the Supabase SDK and Vercel runtime.
 2. From the repository root, run `npm install` once.
 3. From the repository root, run `node web\server.js`.
 4. Open [http://127.0.0.1:8080](http://127.0.0.1:8080), create an account, and add your first course.
